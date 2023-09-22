@@ -1,7 +1,6 @@
 using AutoMapper;
-using Mango.Services.CouponAPI;
-using Mango.Services.CouponAPI.Data;
-using Mango.Services.CouponAPI.Extensions;
+using Mango.Services.ProductAPI;
+using Mango.Services.ProductAPI.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -50,8 +49,8 @@ builder.Services.AddSwaggerGen(option =>
     });
 });
 
-builder.AddAppAuthetication();
-builder.Services.AddAuthorization();
+//builder.AddAppAuthetication();
+//builder.Services.AddAuthorization();
 //builder.Services.AddControllers();
 
 
