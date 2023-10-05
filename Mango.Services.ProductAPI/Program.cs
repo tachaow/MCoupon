@@ -24,7 +24,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(option =>
 {
-    option.AddSecurityDefinition(name: "Bearer", securityScheme: new OpenApiSecurityScheme
+    //option.AddSecurityDefinition(name: "Bearer", securityScheme: new OpenApiSecurityScheme
+    option.AddSecurityDefinition(name: JwtBearerDefaults.AuthenticationScheme, securityScheme: new OpenApiSecurityScheme
     {
         Name = "Authorization",
         Description = "Enter the Bearer Authorization string as following: `Bearer Generated-JWT-Token`",
@@ -46,12 +47,9 @@ builder.Services.AddSwaggerGen(option =>
         }
     });
 });
-
 builder.AddAppAuthetication();
+
 builder.Services.AddAuthorization();
-//builder.Services.AddControllers();
-
-
 
 var app = builder.Build();
 
@@ -63,14 +61,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
-
 ApplyMigration();
-
 app.Run();
 
 

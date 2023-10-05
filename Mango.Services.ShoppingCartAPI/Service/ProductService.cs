@@ -16,6 +16,7 @@ namespace Mango.Services.ShoppingCartAPI.Service
 
         public async Task<IEnumerable<ProductDto>> GetProducts()
         {
+
             var clinet = _httpClientFactory.CreateClient("Product");
             var response = await clinet.GetAsync($"/api/product");
             var apiContet = await response.Content.ReadAsStringAsync();
