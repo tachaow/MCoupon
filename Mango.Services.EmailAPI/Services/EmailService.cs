@@ -46,7 +46,7 @@ namespace Mango.Services.EmailAPI.Services
                 };
 
                 await using var _db = new AppDbContext(_dbOptions);
-                _db.EmailLoggers.AddAsync(emailLog);
+                await _db.EmailLoggers.AddAsync(emailLog);
                 await _db.SaveChangesAsync();
 
                 return true;

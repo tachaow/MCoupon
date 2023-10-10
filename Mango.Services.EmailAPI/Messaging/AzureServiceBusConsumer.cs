@@ -12,36 +12,34 @@ namespace Mango.Services.EmailAPI.Messaging
         private readonly string emailCartQueue;
         private readonly IConfiguration _configuration;
         private readonly EmailService _emailService;
-
         private ServiceBusProcessor _emailCartProcessor;
 
-        public AzureServiceBusConsumer(IConfiguration configuration)
+        public AzureServiceBusConsumer(IConfiguration configuration, EmailService emailService)
         {
             _configuration = configuration;
 
+            _emailService = emailService;
+
             serviceBusConnectionString = _configuration.GetValue<string>("ServiceBusConnectionString");
+
             emailCartQueue = _configuration.GetValue<string>("TopicAndQueueNames:EmailShoppingCartQueue");
 
-            var clien = new ServiceBusClient(serviceBusConnectionString);
-            _emailCartProcessor = clien.CreateProcessor(emailCartQueue);
+            var clinet = new ServiceBusClient(serviceBusConnectionString);
+
+            _emailCartProcessor = clinet.CreateProcessor(emailCartQueue);
         }
 
         public async Task start()
         {
             _emailCartProcessor.ProcessMessageAsync += OnEmailCartRequestReceived;
             _emailCartProcessor.ProcessErrorAsync += ErrorHandler;
+            await _emailCartProcessor.StartProcessingAsync();
+        }
+
+        public async Task stop()
+        {
             await _emailCartProcessor.StopProcessingAsync();
-
-        }
-
-        public Task stop()
-        {
-            throw new NotImplementedException();
-        }
-
-        private Task ErrorHandler(ProcessErrorEventArgs args)
-        {
-            throw new NotImplementedException();
+            await _emailCartProcessor.DisposeAsync();
         }
 
         private async Task OnEmailCartRequestReceived(ProcessMessageEventArgs args)
@@ -51,7 +49,6 @@ namespace Mango.Services.EmailAPI.Messaging
             var body = Encoding.UTF8.GetString(message.Body);
 
             CartDto objMessage = JsonConvert.DeserializeObject<CartDto>(body);
-
             try
             {
                 //TODO - try to log email
@@ -64,6 +61,15 @@ namespace Mango.Services.EmailAPI.Messaging
             }
         }
 
-        
+        private Task ErrorHandler(ProcessErrorEventArgs args)
+        {
+            Console.WriteLine(args.Exception.ToString());
+            return Task.CompletedTask;
+        }
+
+       
+
+       
+
     }
 }
