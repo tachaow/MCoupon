@@ -24,6 +24,12 @@ namespace MCoupon.Web.Controllers
         }
 
         [Authorize]
+        public async Task<IActionResult> Checkout()
+        {
+            return View(await LoadCartDtoBaseOnLogedInUser());
+        }
+
+        [Authorize]
         public async Task<IActionResult> Remove(int CartDetailsId)
         {
             var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
@@ -54,7 +60,7 @@ namespace MCoupon.Web.Controllers
             CartDto cart = await LoadCartDtoBaseOnLogedInUser();
             cart.CartHeader.Email = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Email)?.FirstOrDefault()?.Value;
 
-            ResponseDto response = await _cartService.EmailCart(cart);
+            ResponseDto? response = await _cartService.EmailCart(cart);
             if (response != null & response.IsSuccess)
             {
                 TempData["Success"] = "Email will be processed and sent shortly.";
@@ -62,7 +68,6 @@ namespace MCoupon.Web.Controllers
             }
             return View();
         }
-
 
         [HttpPost]
         public async Task<IActionResult> RemoveCoupon(CartDto cartDto)
