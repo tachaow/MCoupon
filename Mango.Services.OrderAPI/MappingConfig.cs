@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 
-namespace Mango.Services.ShoppingCartAPI
+namespace Mango.Services.OrderAPI
 {
     public class MappingConfig
     {

@@ -1,5 +1,5 @@
-﻿using Mango.Services.ShoppingCartAPI.Models.Dto;
-using Mango.Services.ShoppingCartAPI.Service.IService;
+﻿using Mango.Services.OrderAPI.Models.Dto;
+using Mango.Services.OrderAPI.Service.IService;
 using Newtonsoft.Json;
 
 
@@ -21,7 +21,7 @@ namespace Mango.Services.ShoppingCartAPI.Service
             var response = await clinet.GetAsync($"/api/product");
             var apiContet = await response.Content.ReadAsStringAsync();
             var resp = JsonConvert.DeserializeObject<ResponseDto>(apiContet);
-            if (resp.IsSuccess) 
+            if (resp.IsSuccess)
             {
                 return JsonConvert.DeserializeObject<IEnumerable<ProductDto>>(Convert.ToString(resp.Result));
             }
