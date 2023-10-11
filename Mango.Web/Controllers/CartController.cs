@@ -24,6 +24,12 @@ namespace MCoupon.Web.Controllers
         }
 
         [Authorize]
+        public async Task<IActionResult> Checkout()
+        {
+            return View(await LoadCartDtoBaseOnLogedInUser());
+        }
+
+        [Authorize]
         public async Task<IActionResult> Remove(int CartDetailsId)
         {
             var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
@@ -62,7 +68,6 @@ namespace MCoupon.Web.Controllers
             }
             return View();
         }
-
 
         [HttpPost]
         public async Task<IActionResult> RemoveCoupon(CartDto cartDto)
