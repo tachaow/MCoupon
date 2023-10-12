@@ -50,6 +50,12 @@ namespace MCoupon.Web.Controllers
             return View();
         }
 
+        public async Task<IActionResult> Confirmation(int orderId)
+        {
+            
+            return View(orderId);
+        }
+
         [Authorize]
         public async Task<IActionResult> Remove(int CartDetailsId)
         {
