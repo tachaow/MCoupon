@@ -42,13 +42,13 @@ namespace Mango.Services.OrderAPI.Controllers
                 orderHeaderDto.OrderTime = DateTime.Now;
                 orderHeaderDto.Status = SD.Status_Pending;
                 orderHeaderDto.OrderDetails = _mapper.Map<IEnumerable<OrderDetailsDto>>(cartDto.CartDetails);
-
-                OrderHeader orderCreate = _db.OrderHeaders.Add(_mapper.Map<OrderHeader>(orderHeaderDto)).Entity;
+                orderHeaderDto.OrderTotal = Math.Round(orderHeaderDto.OrderTotal, 2);
+                OrderHeader orderCreated = _db.OrderHeaders.Add(_mapper.Map<OrderHeader>(orderHeaderDto)).Entity;
                 await _db.SaveChangesAsync();
 
-                orderCreate.OrderHeaderId = orderHeaderDto.OrderHeaderId;
+                //orderCreate.OrderHeaderId = orderHeaderDto.OrderHeaderId;
+                orderHeaderDto.OrderHeaderId = orderCreated.OrderHeaderId;
                 _response.Result = orderHeaderDto;
-
             }
             catch (Exception ex)
             {
@@ -71,14 +71,7 @@ namespace Mango.Services.OrderAPI.Controllers
                     //SuccessUrl = "https://example.com/success",      
                     SuccessUrl = stripeRequestDto.ApprovedUrl,
                     CancelUrl = stripeRequestDto.CancelUrl,
-                    LineItems = new List<SessionLineItemOptions>
-                    {
-                        new SessionLineItemOptions
-                        {
-                          Price = "price_H5ggYwtDq4fbrJ",
-                          Quantity = 2,
-                        },
-                    },
+                    LineItems = new List<SessionLineItemOptions>(),
                     Mode = "payment",
                 };
 
