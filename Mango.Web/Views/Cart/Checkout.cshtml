@@ -20,7 +20,7 @@
             <div class="col-7">
                 <div class="row pt-2">
                     <div class="col-12 py-2">
-                        <input placeholder="full name..." asp-for="CartHeader.Name" class="form-control" />
+                        <input asp-for="CartHeader.Name" placeholder="full name..." class="form-control" />
                         <span asp-validation-for="CartHeader.Name" class="text-danger"></span>
                     </div>
                     <div class="col-12 py-2">
@@ -28,7 +28,7 @@
                         <span asp-validation-for="CartHeader.Email" class="text-danger"></span>
                     </div>
                     <div class="col-12 py-2">
-                        <input class="form-control" asp-for="CartHeader.Phone"  placeholder="phone number..." />
+                        <input class="form-control" asp-for="CartHeader.Phone" placeholder="phone number..." />
                         <span asp-validation-for="CartHeader.Phone" class="text-danger"></span>
                     </div>
                     <div class="col-12 pt-2">
@@ -63,11 +63,11 @@
                                 </div>
 
                                 <div class="col-3" style="font-size:11px;">
-                                    <span style="font-size:17px;">@cartObj.Product.Price</span>
+                                    <span style="font-size:17px;"> @cartObj.Product.Price.ToString("c")</span>
 
                                 </div>
                                 <div class="col-3" style="font-size:11px;">
-                                    <span style="font-size:17px;">@cartObj.Product.Count</span>
+                                    <span style="font-size:17px;"> @cartObj.Count</span>
                                 </div>
                             </div>
                             <hr />
@@ -99,6 +99,6 @@
     </div>
 </form>
 
-@section Scripts{
+@section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

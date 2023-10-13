@@ -1,5 +1,6 @@
 ﻿using Mango.Web.Models;
 using Mango.Web.Services.IServices;
+using MCoupon.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -46,6 +47,22 @@ namespace MCoupon.Web.Controllers
             if (response != null && response.IsSuccess)
             {
                 //get stripe session and redirect to stripe to place order
+                var domain = $@"{Request.Scheme}://{Request.Host.Value}/";
+
+                StripeRequestDto stripeRequestDto = new StripeRequestDto()
+                {
+                    ApproveUrl = $"{domain}cart/Confirmation?orderId={orderHeaderDto.OrderHeaderId}",
+                    CancelUrl = $"{domain}cart/checkout",
+                    OrderHeader = orderHeaderDto
+                };
+
+                var stripeResponse = await _orderService.CreateStripeSession(stripeRequestDto);
+                StripeRequestDto stripeResponseResult = JsonConvert.DeserializeObject<StripeRequestDto>
+                                            (Convert.ToString(stripeResponse.Result));
+                Response.Headers.Add("Location", stripeResponseResult.StripeSessionUrl);
+                return new StatusCodeResult(303);
+
+
             }
             return View();
         }

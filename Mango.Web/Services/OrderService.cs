@@ -1,6 +1,7 @@
 ﻿using Mango.Web.Models;
 using Mango.Web.Services.IServices;
 using Mango.Web.Utility;
+using MCoupon.Web.Models;
 
 namespace Mango.Web.Services
 {
@@ -23,6 +24,14 @@ namespace Mango.Web.Services
             });
         }
 
-      
+        public async Task<ResponseDto> CreateStripeSession(StripeRequestDto stripeRequestDto)
+        {
+            return await _baseService.SendAsync(new RequestDto()
+            {
+                ApiType = Utility.SD.ApiType.POST,
+                Data = stripeRequestDto,
+                Url = SD.OrderAPIBase + "/api/order/CreateStripeSession"
+            });
+        }
     }
 }
