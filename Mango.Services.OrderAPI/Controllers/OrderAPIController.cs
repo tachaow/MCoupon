@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Stripe;
 using Stripe.Checkout;
 using System.Security.Policy;
@@ -29,8 +30,8 @@ namespace Mango.Services.OrderAPI.Controllers
         public OrderAPIController(AppDbContext db
             , IProductService productService
             , IMapper mapper
-            ,IConfiguration configuration
-            ,IMessageBus messageBus)
+            , IConfiguration configuration
+            , IMessageBus messageBus)
         {
             _db = db;
             _response = new ResponseDto();
@@ -53,16 +54,16 @@ namespace Mango.Services.OrderAPI.Controllers
                 }
                 else
                 {
-                    objList = _db.OrderHeaders.Include(u => u.OrderDetails).Where(u=>u.UserId == userId).OrderByDescending(u => u.OrderHeaderId).ToList();
+                    objList = _db.OrderHeaders.Include(u => u.OrderDetails).Where(u => u.UserId == userId).OrderByDescending(u => u.OrderHeaderId).ToList();
 
-                }                                              
+                }
                 _response.Result = _mapper.Map<IEnumerable<OrderHeaderDto>>(objList);
 
             }
             catch (Exception ex)
             {
                 _response.IsSuccess = false;
-                _response.Message = ex.Message; 
+                _response.Message = ex.Message;
             }
             return _response;
         }
@@ -73,7 +74,7 @@ namespace Mango.Services.OrderAPI.Controllers
         {
             try
             {
-                OrderHeader orderHeader = _db.OrderHeaders.Include(u=>u.OrderDetails).First(u=>u.OrderHeaderId == id);  
+                OrderHeader orderHeader = _db.OrderHeaders.Include(u => u.OrderDetails).First(u => u.OrderHeaderId == id);
                 _response.Result = _mapper.Map<OrderHeaderDto>(orderHeader);
             }
             catch (Exception ex)
@@ -215,5 +216,38 @@ namespace Mango.Services.OrderAPI.Controllers
             }
             return _response;
         }
+
+        [Authorize]
+        [HttpPost("UpdateStatus/{orderId:int}")]
+        public async Task<ResponseDto> UpdateOrderStatus(int orderId, [FromBody] string newStatus)
+        {
+            try
+            {
+                OrderHeader orderHeader = _db.OrderHeaders.First(u => u.OrderHeaderId == orderId);
+                if (orderHeader != null)
+                {
+                    if (newStatus == SD.Status_Cancelled)
+                    {
+                        var option = new RefundCreateOptions
+                        {
+                            Reason = RefundReasons.RequestedByCustomer,
+                            PaymentIntent = orderHeader.PaymentIntentId
+                        };
+
+                        var service = new RefundService();
+                        Refund refund = service.Create(option);
+                    }
+                    orderHeader.Status = newStatus;
+                    _db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.Message = ex.Message;
+            }
+            return _response;
+        }
+
     }
 }
